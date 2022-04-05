@@ -1,25 +1,35 @@
 #!/bin/sh
 
-export FQDN_1=""
-export FQDN_2=""
+export FQDN_1="" # <<<<<< TO COMPILE
+export FQDN_2="" # <<<<<< TO COMPILE
+export KEY_PATH="./certs/server.key"
+export CERT_PATH="./certs/server-cert.crt"
+export REQ_PATH="./certs/server-cert.req"
+export CSR_PATH="./certs/server.csr"
+export CA_CERT_PATH="./certs/ca-cert.crt"
+export CA_KEY_PATH="./certs/ca-key.crt"
+export DECRYPTED_KEY_PATH="./certs/tls-key-decrypted.key"
+
+
+mkdir ss-certs #create directory with all certificates if doesn't exist
 
 printf "\n\n[+] Generate the private key of the root CA and self-signed root CA certificate"
-openssl genrsa -out rootCA.key 2048
-openssl req -x509 -sha256 -new -nodes -days 3650 -key rootCA.key \
+openssl genrsa -out ${CA_KEY_PATH} 2048
+openssl req -x509 -sha256 -new -nodes -days 3650 -key ${CA_KEY_PATH} \
         -subj "/C=IT/ST=Italy/O=FAKECA/CN=fakeca.it" \
-		-out rootCA.crt
+		-out ${CA_CERT_PATH}
 sleep 5
 
 printf "\n\n [+] Review the CA certificate"
-openssl x509 -in rootCA.crt -text
+openssl x509 -in ${CA_CERT_PATH} -text
 sleep 5
 
 printf "\n\n\ [+] Generate the private key of server \n\n"
-openssl genrsa -out server.key 2048
+openssl genrsa -out ${KEY_PATH} 2048
 sleep 5
 
-printf "\n\n [+] Creation of OpenSSL request configuration file server-cert.req"
-cat <<EOF >> server-cert.req
+printf "\n\n [+] Creation of OpenSSL request configuration file ${REQ_PATH}"
+cat <<EOF >> ${REQ_PATH}
 [req]
 prompt = no
 distinguished_name = dn
@@ -42,11 +52,11 @@ sleep 5
 
 
 printf "\n\n [+] Create the server certificate signing request (CSR) file:"
-openssl req -new -key server.key -out server.csr -config server-cert.req
+openssl req -new -key ${KEY_PATH} -out ${CSR_PATH} -config ${REQ_PATH}
 sleep 5
 
 printf "\n\n [+] Review the server certificate signing request (CSR) file:"
-openssl req -in server.csr -noout -text
+openssl req -in ${CSR_PATH} -noout -text
 sleep 5
 
 #The SAN Extensions will missing from our certificate.
@@ -55,10 +65,10 @@ sleep 5
 #Due to this, the extensions which we added in our CSR were not transferred by default to the certificate. So these extensions must be added to the certificate explicitly.
 
 printf "\n\n [+] Generate the server certificate signed by CA:"	
-openssl x509 -req -days 3650 -in server.csr -out server.crt -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -extensions v3_req -extfile server-cert.req
+openssl x509 -req -days 3650 -in ${CSR_PATH} -out ${CERT_PATH} -CA ${CA_CERT_PATH} -CAkey ${CA_KEY_PATH} -CAcreateserial -extensions v3_req -extfile ${REQ_PATH}
 sleep 5
 
 printf "\n\n [+] Review the server certificate:"	
-openssl x509 -in server.crt -text -noout
+openssl x509 -in ${CERT_PATH} -text -noout
 
 
