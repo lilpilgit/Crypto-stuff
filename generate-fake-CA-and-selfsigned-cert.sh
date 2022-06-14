@@ -2,13 +2,13 @@
 
 export FQDN_1="" # <<<<<< TO COMPILE
 export FQDN_2="" # <<<<<< TO COMPILE
-export KEY_PATH="./certs/server.key"
-export CERT_PATH="./certs/server-cert.crt"
-export REQ_PATH="./certs/server-cert.req"
-export CSR_PATH="./certs/server.csr"
-export CA_CERT_PATH="./certs/ca-cert.crt"
-export CA_KEY_PATH="./certs/ca-key.crt"
-export DECRYPTED_KEY_PATH="./certs/tls-key-decrypted.key"
+export KEY_PATH="./ss-certs/server.key"
+export CERT_PATH="./ss-certs/server-cert.crt"
+export REQ_PATH="./ss-certs/server-cert.req"
+export CSR_PATH="./ss-certs/server.csr"
+export CA_CERT_PATH="./ss-certs/ca-cert.crt"
+export CA_KEY_PATH="./ss-certs/ca-key.crt"
+export DECRYPTED_KEY_PATH="./ss-certs/tls-key-decrypted.key"
 
 
 mkdir ss-certs #create directory with all certificates if doesn't exist
